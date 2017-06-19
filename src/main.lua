@@ -44,24 +44,24 @@ function love.load()
   new_game()
 
   fonts = {}
-  fonts.default = love.graphics.newFont("Audiowide-Regular.ttf",18)
-  fonts.title = love.graphics.newFont("Audiowide-Regular.ttf",64)
-  fonts.subtitle = love.graphics.newFont("Audiowide-Regular.ttf",24)
+  fonts.default = love.graphics.newFont("fonts/Audiowide-Regular.ttf",18)
+  fonts.title = love.graphics.newFont("fonts/Audiowide-Regular.ttf",64)
+  fonts.subtitle = love.graphics.newFont("fonts/Audiowide-Regular.ttf",24)
   love.graphics.setFont(fonts.default)
 
   images = {}
-  images.base = love.graphics.newImage("base.png")
-  images.city = love.graphics.newImage("city.png")
-  images.background = love.graphics.newImage("background.png")
-  images.cursor = love.graphics.newImage("cursor.png")
+  images.base = love.graphics.newImage("images/base.png")
+  images.city = love.graphics.newImage("images/city.png")
+  images.background = love.graphics.newImage("images/background.png")
+  images.cursor = love.graphics.newImage("images/cursor.png")
 
-  music = love.audio.newSource("mmc_3.ogg")
+  music = love.audio.newSource("music/mmc_3.ogg")
 
   sounds = {}
-  sounds.explode = love.audio.newSource("explode.ogg","static")
-  sounds.shoot = love.audio.newSource("shoot.ogg","static")
-  sounds.space = love.audio.newSource("space.ogg","static")
-  sounds.target = love.audio.newSource("target.ogg","static")
+  sounds.explode = love.audio.newSource("sfx/explode.ogg","static")
+  sounds.shoot = love.audio.newSource("sfx/shoot.ogg","static")
+  sounds.space = love.audio.newSource("sfx/space.ogg","static")
+  sounds.target = love.audio.newSource("sfx/target.ogg","static")
 
   music:setLooping(true)
   music:play()
