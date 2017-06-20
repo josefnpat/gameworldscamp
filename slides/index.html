@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Make Games With LÖVE!</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Make Games With LÖVE!
+
+![](logo-love.png)
+
+---
+
+# Seppi
+### @josefnpat (Josef Patoprsty)
+
+Game Developer, Cat Herder, Hat Wearer, etc.
+
+![](avatar.png)
+
+---
+
+# What is LÖVE?
+
+### LÖVE = Game Framework
+
+* Backend: SDL, OpenAL, OpenGL, and much more.
+* Frontend: Lua 5.1 (LuaJIT)
+
+![](Roxbury-Brothers-Jim-Carrey-Head-Dance.gif)
+
+_Baby, don't hurt me..._
+
+
+---
+
+# LuaJIT2 / Lua 5.1
+
+![](logo-lua.png)
+
+* Small syntax set (Easy to learn!)
+* Easily embeddable (Easy to hook into advanced libraries!)
+* Fast (Zoom!)
+
+---
+
+# Install
+
+* Visit http://love2d.org
+* This lesson uses LÖVE 0.10.2
+
+![](website.png)
+
+---
+
+# Confirm
+
+Run your love binary to make sure it works.
+
+You should get the no-game screen with super toast:
+
+![](no-game.png)
+
+---
+
+# Ok, let's make a game!
+
+## Missile Command by Atari, Inc
+
+![](Missile_Command.jpg)
+![](Missile_Command_A5200.png)
+
+---
+
+![](final_new_game.png)
+
+???
+
+Note the different elements:
+
+* Background
+* Targets (bases and cities)
+* UI Text
+* Cursor
+* Score
+
+---
+
+![](final.png)
+
+???
+
+* Enemy Missiles
+* Counter Missiles
+* Explosions
+* Sound Effects
+* Music
+
+---
+
+## Elements
+
+In the order we will do them in:
+
+* Background
+* Cursor
+* Targets (bases and cities)
+* Enemy Missiles
+* Counter Missiles
+* Explosions
+* UI Text
+* Score
+* Music
+* Sound Effects
+
+---
+
+## Comments
+
+```lua
+-- This is a single line comment
+```
+
+```lua
+--[[
+This is a multi
+line comment.
+--]]
+```
+
+---
+
+## Variables
+
+A variable is a named storage location that we can store things in.
+
+```lua
+-- Boolean (true or false)
+cats_are_cute = true
+the_earth_is_flat = false
+
+-- Strings (series of characters)
+my_cats_name = "Dinah, Warmonger of Doom"
+worst_fear = 'Being mauled by my cat'
+
+-- Numbers (integers or doubles)
+fingers_on_my_hand = 5
+centemeters_in_an_inch = 2.54
+times_attacked_by_a_bear = 0
+bank_account_balance = -9000
+
+-- Tables (collection of other variables)
+basketball_baskets = {2,2,1,3}
+
+player = {}
+player.name = "Mario"
+player.lives = 3
+player.has_mushroom = false
+player.princess = {name="Peach",has_mushroom=true}
+```
+
+---
+
+## Functions
+
+A function is a series of instructions that are packaged as a unit.
+
+```lua
+
+function print_name(player)
+  print(player.name)
+  return player.lives,player.hash_mushroom
+end
+
+local lives,has_mushroom = print_name(player) -- Mario
+print(lives) -- 3
+print(has_mushroom)  -- false
+
+```
+
+---
+
+## Scope
+
+The scope of a function is what variables a function can use.
+
+```lua
+-- A global variable can be accessed anywhere after it is stored
+lives = 6 -- global variable
+friend = "Toad"
+
+function print_name(player)
+  -- A local variable can only be accessed for the rest of the function block
+  local friend = "Luigi" -- local variable
+  print(name .. "[" .. lives .. "]")
+end
+
+print_name(player) -- Luigi[6]
+print(friend) -- Toad
+```
+
+---
+
+## LÖVE Callbacks
+
+When specific functions are defined, love will treat them as "callbacks" or functions that the framework chooses when to call.
+
+```lua
+function love.load()
+  -- When LÖVE starts
+end
+
+function love.draw()
+  -- When LÖVE wants to know what to draw to the screen
+end
+
+function love.update(dt)
+  -- When LÖVE wants to know what to update
+end
+
+function love.mousepressed(x,y,b)
+  -- When LÖVE wants to know what to do when you push a mouse button
+end
+
+function love.keypressed(key)
+  -- When LÖVE wants to know what to do when you push a key on the keyboard
+end
+```
+
+---
+
+## Get On With It!
+
+![](get_on_with_it.gif)
+
+### Let's make a game already!
+
+---
+
+# OPEN UP `main.lua` in an editor, you nincompoop.
+
+---
+
+## Background
+
+Set up the load and draw callbacks and use `love.graphics.newImage` and `love.graphics.draw` to draw the background.
+
+```patch
++function love.load()
++
++  g_images = {}
++  g_images.background = love.graphics.newImage("images/background.png")
++
++end
++
++function love.draw()
++
++  love.graphics.draw(g_images.background)
++
++end
+```
+
+---
+
+## love.graphics.newImage
+
+---
+
+## love.graphics.draw
+
+`love.graphics.draw( drawable, x, y, r, sx, sy, ox, oy )`
+
+Arguments:
+
+* Drawable `drawable` - A drawable object.
+* number `x` (0) - The position to draw the object (x-axis).
+* number `y` (0) - The position to draw the object (y-axis).
+* number `r` (0) - Orientation (radians).
+* number `sx` (1) - Scale factor (x-axis).
+* number `sy` (`sx`) - Scale factor (y-axis).
+* number `ox` (0) - Origin offset (x-axis).
+* number `oy` (0) - Origin offset (y-axis).
+
+Returns:
+
+* None
+
+http://love2d.org/wiki/love.graphics.draw
+
+---
+
+## love.mouse.getPosition()
+
+`x,y = love.mouse.getPosition()`
+
+Arguments:
+
+* None
+
+Returns:
+
+* number `x` - The position of the mouse along the x-axis.
+* number `y` - The position of the mouse along the y-axis.
+
+http://love2d.org/wiki/love.mouse.getPosition
+
+---
+
+## Cursor
+
+```patch
+ function love.load()
+ 
+   g_images = {}
+   g_images.background = love.graphics.newImage("images/background.png")
++  g_images.cursor = love.graphics.newImage("images/cursor.png")
+ 
+ end
+ 
+ function love.draw()
+ 
+   love.graphics.draw(g_images.background)
+ 
++  local mx,my = love.mouse.getPosition()
++  love.graphics.draw(g_images.cursor,mx,my,0,1,1,32,32)
++
+ end
+```
+
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
