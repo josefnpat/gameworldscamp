@@ -14,16 +14,6 @@ function love.load()
   g_fonts.subtitle = love.graphics.newFont("fonts/Audiowide-Regular.ttf",24)
   love.graphics.setFont(g_fonts.default)
 
-  g_music = love.audio.newSource("music/mmc_3.ogg")
-  g_music:setLooping(true)
-  g_music:play()
-
-  g_sounds = {}
-  g_sounds.missile_explode = love.audio.newSource("sounds/missile_explode.ogg","static")
-  g_sounds.shoot = love.audio.newSource("sounds/shoot.ogg","static")
-  g_sounds.game_status = love.audio.newSource("sounds/game_status.ogg","static")
-  g_sounds.target_explode = love.audio.newSource("sounds/target_explode.ogg","static")
-
   new_game()
 
 end
@@ -125,25 +115,12 @@ function love.update(dt)
     g_mc:update_next_wave(dt)
   end
 
-  if g_mc:is_target_exploding() then
-    g_sounds.target_explode:stop()
-    g_sounds.target_explode:play()
-  end
-
-  if g_mc:is_missile_exploding() then
-    g_sounds.missile_explode:stop()
-    g_sounds.missile_explode:play()
-  end
-
 end
 
 function love.mousepressed(x,y,button)
 
   if not g_mc:is_new_game() then
-    if g_mc:fire_counter_missile(x,y,button) then
-      g_sounds.game_status:stop()
-      g_sounds.game_status:play()
-    end
+    g_mc:fire_counter_missile(x,y,button)
   end
 
 end
@@ -151,8 +128,6 @@ end
 function love.keypressed(key)
 
   if key == "space" then
-    g_sounds.game_status:stop()
-    g_sounds.game_status:play()
     if g_mc:is_new_game() then
       g_mc:start_new_game()
     end

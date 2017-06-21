@@ -245,6 +245,34 @@ end
 
 ---
 
+## love.graphics.newImage
+
+---
+
+## love.graphics.draw
+
+`love.graphics.draw( drawable, x, y, r, sx, sy, ox, oy )`
+
+Arguments:
+
+* Drawable `drawable` - A drawable object.
+* number `x` (0) - The position to draw the object (x-axis).
+* number `y` (0) - The position to draw the object (y-axis).
+* number `r` (0) - Orientation (radians).
+* number `sx` (1) - Scale factor (x-axis).
+* number `sy` (`sx`) - Scale factor (y-axis).
+* number `ox` (0) - Origin offset (x-axis).
+* number `oy` (0) - Origin offset (y-axis).
+
+Returns:
+
+* None
+
+http://love2d.org/wiki/love.graphics.draw
+
+
+---
+
 ## Get On With It!
 
 ![](get_on_with_it.gif)
@@ -275,33 +303,6 @@ Set up the load and draw callbacks and use `love.graphics.newImage` and `love.gr
 +
 +end
 ```
-
----
-
-## love.graphics.newImage
-
----
-
-## love.graphics.draw
-
-`love.graphics.draw( drawable, x, y, r, sx, sy, ox, oy )`
-
-Arguments:
-
-* Drawable `drawable` - A drawable object.
-* number `x` (0) - The position to draw the object (x-axis).
-* number `y` (0) - The position to draw the object (y-axis).
-* number `r` (0) - Orientation (radians).
-* number `sx` (1) - Scale factor (x-axis).
-* number `sy` (`sx`) - Scale factor (y-axis).
-* number `ox` (0) - Origin offset (x-axis).
-* number `oy` (0) - Origin offset (y-axis).
-
-Returns:
-
-* None
-
-http://love2d.org/wiki/love.graphics.draw
 
 ---
 
@@ -337,13 +338,449 @@ http://love2d.org/wiki/love.mouse.getPosition
  
    love.graphics.draw(g_images.background)
  
-+  local mx,my = love.mouse.getPosition()
-+  love.graphics.draw(g_images.cursor,mx,my,0,1,1,32,32)
++  draw_ui()
++
+ end
+ 
++function draw_ui()
++
++  local mousex,mousey = love.mouse.getPosition()
++  love.graphics.draw(g_images.cursor,mousex,mousey,0,1,1,32,32)
++
++end
+```
+
+---
+
+### New Game
+
+```patch
++missilecommandlib = require "missilecommand"
++
+ function love.load()
+ 
+   g_images = {}
+   g_images.background = love.graphics.newImage("images/background.png")
+   g_images.cursor = love.graphics.newImage("images/cursor.png")
+ 
++  new_game()
++
+ end
++
++function new_game()
++
++  g_mc = missilecommandlib.new()
++
++end
+```
+
+---
+
+```patch
++function love.keypressed(key)
++
++  if key == "space" then
++    if g_mc:is_new_game() then
++      g_mc:start_new_game()
++    end
++    if g_mc:is_gameover() then
++      new_game()
++    end
++  end
++
++end
+```
+
+---
+
+## Targets (Cities and Bases)
+
+```patch
+
+ function love.load()
+ 
+   g_images = {}
+   g_images.background = love.graphics.newImage("images/background.png")
+   g_images.cursor = love.graphics.newImage("images/cursor.png")
++  g_images.base = love.graphics.newImage("images/base.png")
++  g_images.city = love.graphics.newImage("images/city.png")
+ 
+   new_game()
+ 
+ end
+```
+
+---
+
+```patch
+ function love.draw()
+ 
+   love.graphics.draw(g_images.background)
+ 
++  draw_targets(g_mc:get_targets())
++
+   draw_ui()
+ 
+ end
+```
+
+---
+
+```patch
++function draw_targets(targets)
++
++  for _,target in pairs(targets) do
++    if target.alive then
++      if target.type == "base" then
++        local mousex,mousey = love.mouse.getPosition()
++        local angle = g_mc:find_angle_to_position(target,mousex,mousey)
++        if target.ammo < 1 then
++          love.graphics.setColor(127,127,127)
++        end
++        love.graphics.draw(g_images.base,target.x,target.y,angle,1,1,32,32)
++        love.graphics.printf(string.rep("I",target.ammo),target.x-32,target.y+32,64,"center")
++        love.graphics.setColor(255,255,255)
++      else --if target.type == "city" then
++        love.graphics.draw(g_images.city,target.x,target.y,0,1,1,32,32)
++      end
++    end
++  end
++
++end
+```
+
+---
+
+```patch
++function love.update(dt)
++
++  if not g_mc:is_gameover() and not g_mc:is_new_game() then
++    g_mc:update_ammo(dt)
++  end
++
++end
+```
+
+---
+
+## Counter Missiles
+
+```patch
+ function love.draw()
+ 
+   love.graphics.draw(g_images.background)
+ 
++  love.graphics.setColor(0,0,255)
++  draw_missiles(g_mc:get_counter_missiles())
++  love.graphics.setColor(255,255,255)
++
+   draw_targets(g_mc:get_targets())
+ 
+   draw_ui()
+ 
+ end
+```
+
+---
+
+```patch
++function draw_missiles(missiles)
++
++  for _,missile in pairs(missiles) do
++    love.graphics.line(missile.source.x,missile.source.y,missile.current.x,missile.current.y)
++  end
++
++end
+```
+
+```patch
+ function love.update(dt)
+ 
+   if not g_mc:is_gameover() and not g_mc:is_new_game() then
+     g_mc:update_ammo(dt)
++    g_mc:update_counter_missiles(dt)
++  end
++
++end
++
++function love.mousepressed(x,y,button)
++
++  if not g_mc:is_new_game() then
++    g_mc:fire_counter_missile(x,y,button)
+   end
+ 
+ end
+```
+
+---
+
+## Explosions
+
+```patch
+ function love.draw()
+ 
+   love.graphics.draw(g_images.background)
+ 
+   love.graphics.setColor(0,0,255)
+   draw_missiles(g_mc:get_counter_missiles())
+   love.graphics.setColor(255,255,255)
+ 
++  draw_explosions(g_mc:get_counter_missiles())
++
+   draw_targets(g_mc:get_targets())
+ 
+   draw_ui()
+ 
+ end
+```
+
+---
+
+```patch
++function draw_explosions(counter_missiles)
++
++  for _,missile in pairs(counter_missiles) do
++    if missile.explode then
++      love.graphics.setColor(math.random(255),math.random(255),math.random(255))
++      love.graphics.circle("fill",missile.current.x,missile.current.y,missile.explode*64)
++    end
++  end
++  love.graphics.setColor(255,255,255)
++
++end
+```
+
+---
+
+## Enemy Missiles
+
+```patch
+ function love.draw()
+ 
+   love.graphics.draw(g_images.background)
+ 
+   love.graphics.setColor(0,0,255)
+   draw_missiles(g_mc:get_counter_missiles())
+   love.graphics.setColor(255,255,255)
+ 
+   draw_explosions(g_mc:get_counter_missiles())
+ 
++  love.graphics.setColor(255,0,0)
++  draw_missiles(g_mc:get_enemy_missiles())
++  love.graphics.setColor(255,255,255)
++
+   draw_targets(g_mc:get_targets())
+ 
+   draw_ui()
+ 
+ end
+```
+
+---
+
+```patch
+ function love.update(dt)
+ 
+   if not g_mc:is_gameover() and not g_mc:is_new_game() then
+     g_mc:update_ammo(dt)
+     g_mc:update_counter_missiles(dt)
++    g_mc:update_enemy_missiles(dt)
++    g_mc:update_next_wave(dt)
+   end
+ 
+ end
+```
+
+---
+
+## Basic UI
+
+```patch
+ function draw_ui()
+ 
++  love.graphics.print("SCORE: "..g_mc:get_score(),32,32)
++
++  if g_mc:is_new_game() then
++    love.graphics.printf("MISSILE COMMAND",0,150,800,"center")
++    love.graphics.printf("DEFEND CITIES",0,300,800,"center")
++  elseif g_mc:is_gameover() then
++    love.graphics.printf("THE END",0,300,800,"center")
++  end
++
+   local mousex,mousey = love.mouse.getPosition()
+   love.graphics.draw(g_images.cursor,mousex,mousey,0,1,1,32,32)
+ 
+ end
+```
+
+---
+
+## Fonts
+
+```patch
+ function love.load()
+ 
+   g_images = {}
+   g_images.background = love.graphics.newImage("images/background.png")
+   g_images.cursor = love.graphics.newImage("images/cursor.png")
+   g_images.base = love.graphics.newImage("images/base.png")
+   g_images.city = love.graphics.newImage("images/city.png")
+ 
++  g_fonts = {}
++  g_fonts.default = love.graphics.newFont("fonts/Audiowide-Regular.ttf",18)
++  g_fonts.title = love.graphics.newFont("fonts/Audiowide-Regular.ttf",64)
++  g_fonts.subtitle = love.graphics.newFont("fonts/Audiowide-Regular.ttf",24)
++  love.graphics.setFont(g_fonts.default)
++
+   new_game()
+ 
+ end
+```
+
+---
+
+```patch
+ function draw_ui()
+ 
++  love.graphics.setFont(g_fonts.subtitle)
+   love.graphics.print("SCORE: "..g_mc:get_score(),32,32)
+ 
+   if g_mc:is_new_game() then
++    love.graphics.setFont(g_fonts.title)
+     love.graphics.printf("MISSILE COMMAND",0,150,800,"center")
++    love.graphics.setFont(g_fonts.subtitle)
+     love.graphics.printf("DEFEND CITIES",0,300,800,"center")
+   elseif g_mc:is_gameover() then
++    love.graphics.setFont(g_fonts.title)
+     love.graphics.printf("THE END",0,300,800,"center")
+   end
++  love.graphics.setFont(g_fonts.default)
+ 
+   local mousex,mousey = love.mouse.getPosition()
+   love.graphics.draw(g_images.cursor,mousex,mousey,0,1,1,32,32)
+ 
+ end
+```
+
+---
+
+## Music
+
+```patch
+ function love.load()
+ 
+   g_images = {}
+   g_images.background = love.graphics.newImage("images/background.png")
+   g_images.cursor = love.graphics.newImage("images/cursor.png")
+   g_images.base = love.graphics.newImage("images/base.png")
+   g_images.city = love.graphics.newImage("images/city.png")
+ 
+   g_fonts = {}
+   g_fonts.default = love.graphics.newFont("fonts/Audiowide-Regular.ttf",18)
+   g_fonts.title = love.graphics.newFont("fonts/Audiowide-Regular.ttf",64)
+   g_fonts.subtitle = love.graphics.newFont("fonts/Audiowide-Regular.ttf",24)
+   love.graphics.setFont(g_fonts.default)
+ 
++  g_music = love.audio.newSource("music/mmc_3.ogg")
++  g_music:setLooping(true)
++  g_music:play()
++
+   new_game()
+ 
+ end
+```
+
+---
+
+## Sound Effects
+
+```patch
+ function love.load()
+ 
+   g_images = {}
+   g_images.background = love.graphics.newImage("images/background.png")
+   g_images.cursor = love.graphics.newImage("images/cursor.png")
+   g_images.base = love.graphics.newImage("images/base.png")
+   g_images.city = love.graphics.newImage("images/city.png")
+ 
+   g_fonts = {}
+   g_fonts.default = love.graphics.newFont("fonts/Audiowide-Regular.ttf",18)
+   g_fonts.title = love.graphics.newFont("fonts/Audiowide-Regular.ttf",64)
+   g_fonts.subtitle = love.graphics.newFont("fonts/Audiowide-Regular.ttf",24)
+   love.graphics.setFont(g_fonts.default)
+ 
+   g_music = love.audio.newSource("music/mmc_3.ogg")
+   g_music:setLooping(true)
+   g_music:play()
+ 
++  g_sounds = {}
++  g_sounds.missile_explode = love.audio.newSource("sounds/missile_explode.ogg","static")
++  g_sounds.shoot = love.audio.newSource("sounds/shoot.ogg","static")
++  g_sounds.game_status = love.audio.newSource("sounds/game_status.ogg","static")
++  g_sounds.target_explode = love.audio.newSource("sounds/target_explode.ogg","static")
++
+   new_game()
+ 
+ end
+```
+
+---
+
+```patch
+ function love.update(dt)
+ 
+   if not g_mc:is_gameover() and not g_mc:is_new_game() then
+     g_mc:update_ammo(dt)
+     g_mc:update_counter_missiles(dt)
+     g_mc:update_enemy_missiles(dt)
+     g_mc:update_next_wave(dt)
+   end
+ 
++  if g_mc:is_target_exploding() then
++    g_sounds.target_explode:stop()
++    g_sounds.target_explode:play()
++  end
++
++  if g_mc:is_missile_exploding() then
++    g_sounds.missile_explode:stop()
++    g_sounds.missile_explode:play()
++  end
 +
  end
 ```
 
+---
 
+```patch
+ function love.mousepressed(x,y,button)
+ 
+   if not g_mc:is_new_game() then
+-    g_mc:fire_counter_missile(x,y,button)
++    if g_mc:fire_counter_missile(x,y,button) then
++      g_sounds.game_status:stop()
++      g_sounds.game_status:play()
++    end
+   end
+ 
+ end
+```
+
+---
+
+```patch
+ function love.keypressed(key)
+ 
+   if key == "space" then
++    g_sounds.game_status:stop()
++    g_sounds.game_status:play()
+     if g_mc:is_new_game() then
+       g_mc:start_new_game()
+     end
+     if g_mc:is_gameover() then
+       new_game()
+     end
+   end
+```
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">
     </script>
