@@ -99,6 +99,7 @@ Note the different elements:
 * UI Text
 * Cursor
 * Score
+* New Game
 
 ---
 
@@ -352,7 +353,7 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
-### New Game
+## New Game
 
 ```patch
 +missilecommandlib = require "missilecommand"
@@ -376,6 +377,8 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
+## New Game
+
 ```patch
 +function love.keypressed(key)
 +
@@ -396,7 +399,6 @@ http://love2d.org/wiki/love.mouse.getPosition
 ## Targets (Cities and Bases)
 
 ```patch
-
  function love.load()
  
    g_images = {}
@@ -412,6 +414,8 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
+## Targets (Cities and Bases)
+
 ```patch
  function love.draw()
  
@@ -426,6 +430,8 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
+## Targets (Cities and Bases)
+
 ```patch
 +function draw_targets(targets)
 +
@@ -438,7 +444,8 @@ http://love2d.org/wiki/love.mouse.getPosition
 +          love.graphics.setColor(127,127,127)
 +        end
 +        love.graphics.draw(g_images.base,target.x,target.y,angle,1,1,32,32)
-+        love.graphics.printf(string.rep("I",target.ammo),target.x-32,target.y+32,64,"center")
++        love.graphics.printf(string.rep("I",target.ammo),
++          target.x-32,target.y+32,64,"center")
 +        love.graphics.setColor(255,255,255)
 +      else --if target.type == "city" then
 +        love.graphics.draw(g_images.city,target.x,target.y,0,1,1,32,32)
@@ -450,6 +457,8 @@ http://love2d.org/wiki/love.mouse.getPosition
 ```
 
 ---
+
+## Targets (Cities and Bases)
 
 ```patch
 +function love.update(dt)
@@ -483,11 +492,14 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
+## Counter Missiles
+
 ```patch
 +function draw_missiles(missiles)
 +
 +  for _,missile in pairs(missiles) do
-+    love.graphics.line(missile.source.x,missile.source.y,missile.current.x,missile.current.y)
++    love.graphics.line(missile.source.x,missile.source.y,
++      missile.current.x,missile.current.y)
 +  end
 +
 +end
@@ -536,13 +548,16 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
+## Explosions
+
 ```patch
 +function draw_explosions(counter_missiles)
 +
 +  for _,missile in pairs(counter_missiles) do
 +    if missile.explode then
 +      love.graphics.setColor(math.random(255),math.random(255),math.random(255))
-+      love.graphics.circle("fill",missile.current.x,missile.current.y,missile.explode*64)
++      love.graphics.circle("fill",
++        missile.current.x,missile.current.y,missile.explode*64)
 +    end
 +  end
 +  love.graphics.setColor(255,255,255)
@@ -577,6 +592,8 @@ http://love2d.org/wiki/love.mouse.getPosition
 ```
 
 ---
+
+## Enemy Missiles
 
 ```patch
  function love.update(dt)
@@ -639,6 +656,8 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
+## Fonts
+
 ```patch
  function draw_ui()
  
@@ -697,27 +716,17 @@ http://love2d.org/wiki/love.mouse.getPosition
 ```patch
  function love.load()
  
-   g_images = {}
-   g_images.background = love.graphics.newImage("images/background.png")
-   g_images.cursor = love.graphics.newImage("images/cursor.png")
-   g_images.base = love.graphics.newImage("images/base.png")
-   g_images.city = love.graphics.newImage("images/city.png")
- 
-   g_fonts = {}
-   g_fonts.default = love.graphics.newFont("fonts/Audiowide-Regular.ttf",18)
-   g_fonts.title = love.graphics.newFont("fonts/Audiowide-Regular.ttf",64)
-   g_fonts.subtitle = love.graphics.newFont("fonts/Audiowide-Regular.ttf",24)
-   love.graphics.setFont(g_fonts.default)
- 
-   g_music = love.audio.newSource("music/mmc_3.ogg")
-   g_music:setLooping(true)
-   g_music:play()
+  [...] snip [...]
  
 +  g_sounds = {}
-+  g_sounds.missile_explode = love.audio.newSource("sounds/missile_explode.ogg","static")
-+  g_sounds.shoot = love.audio.newSource("sounds/shoot.ogg","static")
-+  g_sounds.game_status = love.audio.newSource("sounds/game_status.ogg","static")
-+  g_sounds.target_explode = love.audio.newSource("sounds/target_explode.ogg","static")
++  g_sounds.missile_explode = love.audio.newSource("sounds/missile_explode.ogg",
++    "static")
++  g_sounds.shoot = love.audio.newSource("sounds/shoot.ogg",
++    "static")
++  g_sounds.game_status = love.audio.newSource("sounds/game_status.ogg",
++    "static")
++  g_sounds.target_explode = love.audio.newSource("sounds/target_explode.ogg",
++    "static")
 +
    new_game()
  
@@ -725,6 +734,8 @@ http://love2d.org/wiki/love.mouse.getPosition
 ```
 
 ---
+
+## Sound Effects
 
 ```patch
  function love.update(dt)
@@ -751,6 +762,8 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
+## Sound Effects
+
 ```patch
  function love.mousepressed(x,y,button)
  
@@ -766,6 +779,8 @@ http://love2d.org/wiki/love.mouse.getPosition
 ```
 
 ---
+
+## Sound Effects
 
 ```patch
  function love.keypressed(key)
