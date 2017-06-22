@@ -36,7 +36,7 @@ Game Developer, Cat Herder, Hat Wearer, etc.
 
 ---
 
-# What is LÖVE?
+## What is LÖVE?
 
 ### LÖVE = Game Framework
 
@@ -50,26 +50,28 @@ _Baby, don't hurt me..._
 
 ---
 
-# LuaJIT2 / Lua 5.1
-
-![](logo-lua.png)
+## Lua 5.1 (LuaJIT)
 
 * Small syntax set (Easy to learn!)
 * Easily embeddable (Easy to hook into advanced libraries!)
 * Fast (Zoom!)
 
+![](lua.png)
+
 ---
 
-# Install
+## Installed?
+
+If you don't have love installed, go ahead and do so now.
 
 * Visit http://love2d.org
-* This lesson uses LÖVE 0.10.2
+* This lesson uses `LÖVE 0.10.2` "Super Toast"
 
 ![](website.png)
 
 ---
 
-# Confirm
+## Confirm Install?
 
 Run your love binary to make sure it works.
 
@@ -79,9 +81,20 @@ You should get the no-game screen with super toast:
 
 ---
 
-# Ok, let's make a game!
+## Running your code
 
-## Missile Command by Atari, Inc
+* Windows/Mac: drag and drop your folder with `main.lua` onto `love.exe`
+* Linux: use the command line and run `love <dir>` where `<dir>` is the location of your code.
+
+![](run-windows.resize.png)
+
+---
+
+# OK, let's make a game!
+
+We're going to make ...
+
+## Missile Command by Atari, Inc (1980)
 
 ![](Missile_Command.jpg)
 ![](Missile_Command_A5200.png)
@@ -99,7 +112,7 @@ Note the different elements:
 * UI Text
 * Cursor
 * Score
-* New Game
+* Key to start New Game
 
 ---
 
@@ -117,37 +130,38 @@ Note the different elements:
 
 ## Elements
 
-In the order we will do them in:
+Here are the elements that you saw in the previous two slides.
+
+We will do them in this order:
 
 * Background
 * Cursor
+* Key to start New Game
 * Targets (bases and cities)
-* Enemy Missiles
 * Counter Missiles
 * Explosions
-* UI Text
-* Score
+* Enemy Missiles
+
+And if we have time:
+
+* Title and Score (Basic UI)
+* Fonts (Advanced UI)
 * Music
 * Sound Effects
 
 ---
 
-## Comments
+## Lua - Comments
+
+Sometimes it's nice to leave notes for other developers.
 
 ```lua
 -- This is a single line comment
 ```
 
-```lua
---[[
-This is a multi
-line comment.
---]]
-```
-
 ---
 
-## Variables
+## Lua - Variables
 
 A variable is a named storage location that we can store things in.
 
@@ -178,7 +192,7 @@ player.princess = {name="Peach",has_mushroom=true}
 
 ---
 
-## Functions
+## Lua - Functions
 
 A function is a series of instructions that are packaged as a unit.
 
@@ -197,7 +211,7 @@ print(has_mushroom)  -- false
 
 ---
 
-## Scope
+## Lua - Function Scope
 
 The scope of a function is what variables a function can use.
 
@@ -218,7 +232,7 @@ print(friend) -- Toad
 
 ---
 
-## LÖVE Callbacks
+## LÖVE - Callbacks
 
 When specific functions are defined, love will treat them as "callbacks" or functions that the framework chooses when to call.
 
@@ -246,11 +260,23 @@ end
 
 ---
 
-## love.graphics.newImage
+## LÖVE - love.graphics.newImage
+
+`image = love.graphics.newImage( filename )`
+
+Arguments:
+
+* string `filename` - The filepath to the image file.
+
+Returns:
+
+* Image `image` - An Image object which can be drawn on screen.
+
+http://love2d.org/wiki/love.graphics.newImage
 
 ---
 
-## love.graphics.draw
+## LÖVE - love.graphics.draw
 
 `love.graphics.draw( drawable, x, y, r, sx, sy, ox, oy )`
 
@@ -271,18 +297,21 @@ Returns:
 
 http://love2d.org/wiki/love.graphics.draw
 
-
 ---
 
 ## Get On With It!
 
-![](get_on_with_it.gif)
+![](get_on_with_it.jpg)
 
 ### Let's make a game already!
 
 ---
 
-# OPEN UP `main.lua` in an editor, you nincompoop.
+## Code Editor
+
+Open up `main.lua` with your code editor of choice. Here's me using gEdir!
+
+![](gedit.png)
 
 ---
 
@@ -307,7 +336,7 @@ Set up the load and draw callbacks and use `love.graphics.newImage` and `love.gr
 
 ---
 
-## love.mouse.getPosition()
+## LÖVE - love.mouse.getPosition()
 
 `x,y = love.mouse.getPosition()`
 
@@ -325,6 +354,8 @@ http://love2d.org/wiki/love.mouse.getPosition
 ---
 
 ## Cursor
+
+Let's add a `draw_ui()` function and use `love.mouse.getPosition()` to draw the cursor.
 
 ```patch
  function love.load()
@@ -353,7 +384,9 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
-## New Game
+## New Game (1/2)
+
+Let's load the missile command library that will have all of the game logic.
 
 ```patch
 +missilecommandlib = require "missilecommand"
@@ -377,7 +410,9 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
-## New Game
+## New Game (2/2)
+
+We will use the `love.keypressed(key)` callback to detect the spacebar for game states.
 
 ```patch
 +function love.keypressed(key)
@@ -396,7 +431,29 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
-## Targets (Cities and Bases)
+## Lua - pairs
+
+Lua has an iterator system designed for tables with content in them. When you need to do something for every entry in a table, we use can `pairs`.
+
+```lua
+basketball_baskets = {2,2,3,1,2}
+
+for i,v in pairs(basketball_baskets) do
+  print("basket number: "..i..", points scored: "..v)
+end
+-- basket number: 1 points scored: 2
+-- basket number: 2 points scored: 2
+-- basket number: 3 points scored: 3
+-- basket number: 4 points scored: 1
+-- basket number: 5 points scored: 2
+
+```
+
+---
+
+## Targets - Cities and Bases (1/3)
+
+Let's load the target assets and set up a `draw_targets()` function.
 
 ```patch
  function love.load()
@@ -411,11 +468,6 @@ http://love2d.org/wiki/love.mouse.getPosition
  
  end
 ```
-
----
-
-## Targets (Cities and Bases)
-
 ```patch
  function love.draw()
  
@@ -430,26 +482,24 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
-## Targets (Cities and Bases)
+## Targets - Cities and Bases (2/3)
+
+Let's implement the `draw_targets()` function. This will draw the individual bases and targets. The bases will be drawn at an angle so that you get an idea where you're aiming. We will use `:find_angle_to_position` for this.
 
 ```patch
 +function draw_targets(targets)
 +
 +  for _,target in pairs(targets) do
 +    if target.alive then
+
 +      if target.type == "base" then
 +        local mousex,mousey = love.mouse.getPosition()
 +        local angle = g_mc:find_angle_to_position(target,mousex,mousey)
-+        if target.ammo < 1 then
-+          love.graphics.setColor(127,127,127)
-+        end
 +        love.graphics.draw(g_images.base,target.x,target.y,angle,1,1,32,32)
-+        love.graphics.printf(string.rep("I",target.ammo),
-+          target.x-32,target.y+32,64,"center")
-+        love.graphics.setColor(255,255,255)
 +      else --if target.type == "city" then
 +        love.graphics.draw(g_images.city,target.x,target.y,0,1,1,32,32)
 +      end
+
 +    end
 +  end
 +
@@ -458,7 +508,9 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
-## Targets (Cities and Bases)
+## Targets - Cities and Bases (3/3)
+
+Let's hook up the base reloading so that we don't run out of ammo.
 
 ```patch
 +function love.update(dt)
@@ -472,7 +524,28 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
-## Counter Missiles
+## LÖVE - love.graphics.setColor()
+
+`love.graphics.setColor( red, green, blue, alpha )`
+
+Arguments:
+
+* number `red` - The amount of red.
+* number `green` - The amount of green.
+* number `blue` - The amount of blue.
+* number `alpha` (255) - The amount of alpha. The alpha value will be applied to all subsequent draw operations, even the drawing of an image.
+
+Return:
+
+* None
+
+http://love2d.org/wiki/love.graphics.setColor
+
+---
+
+## Counter Missiles (1/2)
+
+Let's add a `draw_missiles()` function we can use to draw missiles. Since we will re-use this function, we will set the color in the `love.draw()` callback using `love.graphics.setColor()`.
 
 ```patch
  function love.draw()
@@ -488,13 +561,7 @@ http://love2d.org/wiki/love.mouse.getPosition
    draw_ui()
  
  end
-```
-
----
-
-## Counter Missiles
-
-```patch
+ 
 +function draw_missiles(missiles)
 +
 +  for _,missile in pairs(missiles) do
@@ -505,38 +572,80 @@ http://love2d.org/wiki/love.mouse.getPosition
 +end
 ```
 
+---
+
+## Counter Missiles (2/2)
+
+Let's add the logic so that the counter missiles move. We will use `:update_counter_missiles()`.
+
 ```patch
  function love.update(dt)
  
    if not g_mc:is_gameover() and not g_mc:is_new_game() then
      g_mc:update_ammo(dt)
 +    g_mc:update_counter_missiles(dt)
-+  end
-+
-+end
-+
-+function love.mousepressed(x,y,button)
-+
-+  if not g_mc:is_new_game() then
-+    g_mc:fire_counter_missile(x,y,button)
    end
  
  end
 ```
+```patch
++function love.mousepressed(x,y,button)
++
++  if not g_mc:is_new_game() then
++    g_mc:fire_counter_missile(x,y,button)
++  end
++
++end
+```
+
+---
+
+## Lua - math.random()
+
+When you need a random number, Lua's `math` module has one for you to use. When a single argument is provided, it will return a random number from 1 to the number provided.
+
+```lua
+print(math.random(10)) -- 1
+print(math.random(10)) -- 4
+print(math.random(10)) -- 2
+print(math.random(10)) -- 8
+print(math.random(10)) -- 9
+print(math.random(10)) -- 5
+print(math.random(10)) -- 10
+
+```
+
+---
+
+## LÖVE - love.graphics.circle()
+
+
+Synopsis
+
+love.graphics.circle( mode, x, y, radius )
+
+Arguments:
+
+* DrawMode `mode` - How to draw the circle.
+* number `x` - The position of the center along x-axis.
+* number `y` - The position of the center along y-axis.
+* number `radius` - The radius of the circle.
+
+Returns:
+
+* None
+
+http://love2d.org/wiki/love.graphics.circle
 
 ---
 
 ## Explosions
 
+Let's set up `draw_explosions()` function to draw our explosions. We use `math.random()` to make the colors change every frame.
+
 ```patch
  function love.draw()
- 
-   love.graphics.draw(g_images.background)
- 
-   love.graphics.setColor(0,0,255)
-   draw_missiles(g_mc:get_counter_missiles())
-   love.graphics.setColor(255,255,255)
- 
+   [...] snip [...]
 +  draw_explosions(g_mc:get_counter_missiles())
 +
    draw_targets(g_mc:get_targets())
@@ -545,11 +654,6 @@ http://love2d.org/wiki/love.mouse.getPosition
  
  end
 ```
-
----
-
-## Explosions
-
 ```patch
 +function draw_explosions(counter_missiles)
 +
@@ -569,17 +673,11 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ## Enemy Missiles
 
+Let's reuse our `draw_missiles()` function and wrap it with a new color. We will also update the missile and wave logic.
+
 ```patch
  function love.draw()
- 
-   love.graphics.draw(g_images.background)
- 
-   love.graphics.setColor(0,0,255)
-   draw_missiles(g_mc:get_counter_missiles())
-   love.graphics.setColor(255,255,255)
- 
-   draw_explosions(g_mc:get_counter_missiles())
- 
+   [...] snip [...]
 +  love.graphics.setColor(255,0,0)
 +  draw_missiles(g_mc:get_enemy_missiles())
 +  love.graphics.setColor(255,255,255)
@@ -590,11 +688,6 @@ http://love2d.org/wiki/love.mouse.getPosition
  
  end
 ```
-
----
-
-## Enemy Missiles
-
 ```patch
  function love.update(dt)
  
@@ -610,7 +703,29 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
-## Basic UI
+## LÖVE - love.graphics.printf
+
+`love.graphics.printf( text, x, y, limit, align )`
+
+Arguments:
+
+* string `text` - A text string.
+* number `x` - The position on the x-axis.
+* number `y` - The position on the y-axis.
+* number `limit` - Wrap the line after this many horizontal pixels.
+* AlignMode `align` ("left") - The alignment.
+
+Returns:
+
+* None
+
+http://love2d.org/wiki/love.graphics.printf
+
+---
+
+## Title and Score (Basic UI)
+
+Let's add some basic UI elements using `love.graphics.printf()`. We will check `:is_new_game()` and `:is_gameover` to determine what to show.
 
 ```patch
  function draw_ui()
@@ -632,17 +747,46 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
-## Fonts
+## LÖVE - love.graphics.newFont
+
+`font = love.graphics.newFont( filename )`
+
+Arguments:
+
+* string `filename` - The filepath to the BMFont or TrueType font file.
+
+Returns:
+
+* Font `font` - A Font object which can be used to draw text on screen.
+
+http://love2d.org/wiki/love.graphics.newFont
+
+---
+
+## LÖVE - love.graphics.setFont
+
+`love.graphics.setFont( font )`
+
+Arguments:
+
+* Font `font` - The Font object to use.
+
+Returns:
+
+* None
+
+http://love2d.org/wiki/love.graphics.setFont
+
+---
+
+## Fonts - Advanced UI (1/2)
+
+Let's make the UI look better by adding some fonts with `love.graphics.newFont()`.
+
 
 ```patch
  function love.load()
- 
-   g_images = {}
-   g_images.background = love.graphics.newImage("images/background.png")
-   g_images.cursor = love.graphics.newImage("images/cursor.png")
-   g_images.base = love.graphics.newImage("images/base.png")
-   g_images.city = love.graphics.newImage("images/city.png")
- 
+   [...] snip [...]
 +  g_fonts = {}
 +  g_fonts.default = love.graphics.newFont("fonts/Audiowide-Regular.ttf",18)
 +  g_fonts.title = love.graphics.newFont("fonts/Audiowide-Regular.ttf",64)
@@ -656,7 +800,9 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
-## Fonts
+## Fonts - Advanced UI (2/2)
+
+Let us set them in the UI with `love.graphics.setFont()`.
 
 ```patch
  function draw_ui()
@@ -683,7 +829,39 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
+## LÖVE - love.audio.newSource
+
+Arguments:
+
+* string `filename` - The filepath to the audio file.
+* SourceType `type` ("stream") - Streaming or static source.
+
+Returns:
+
+* None
+
+---
+
+## LÖVE - Source:play()
+
+## LÖVE - Source:setLooping()
+
+## LÖVE - Source:stop()
+
+```lua
+meow = love.audio.newSource("meow.ogg")
+
+meow:stop()
+meow:setLooping(false)
+meow:stop()
+
+```
+
+---
+
 ## Music
+
+Let's use `love.audio.newSource` `source:setLooping()` and `source:play()` to start some music when the game loads.
 
 ```patch
  function love.load()
@@ -711,7 +889,9 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
-## Sound Effects
+## Sound Effects (1/3)
+
+Let's add a few sound effects using `love.audio.newSource()`, `source:stop()` and `source:play()`. We add `source:stop()` so that the sound effects give an immediate response.
 
 ```patch
  function love.load()
@@ -719,14 +899,14 @@ http://love2d.org/wiki/love.mouse.getPosition
   [...] snip [...]
  
 +  g_sounds = {}
-+  g_sounds.missile_explode = love.audio.newSource("sounds/missile_explode.ogg",
-+    "static")
-+  g_sounds.shoot = love.audio.newSource("sounds/shoot.ogg",
-+    "static")
-+  g_sounds.game_status = love.audio.newSource("sounds/game_status.ogg",
-+    "static")
-+  g_sounds.target_explode = love.audio.newSource("sounds/target_explode.ogg",
-+    "static")
++  g_sounds.missile_explode =
++    love.audio.newSource("sounds/missile_explode.ogg","static")
++  g_sounds.shoot =
++    love.audio.newSource("sounds/shoot.ogg","static")
++  g_sounds.game_status =
++    love.audio.newSource("sounds/game_status.ogg","static")
++  g_sounds.target_explode =
++    love.audio.newSource("sounds/target_explode.ogg","static")
 +
    new_game()
  
@@ -735,7 +915,9 @@ http://love2d.org/wiki/love.mouse.getPosition
 
 ---
 
-## Sound Effects
+## Sound Effects (2/3)
+
+Here we hook the sound effects into the `love.update` callback by using `:is_target_exploding()` and `:is_missile_exploding()`
 
 ```patch
  function love.update(dt)
@@ -759,10 +941,11 @@ http://love2d.org/wiki/love.mouse.getPosition
 +
  end
 ```
-
 ---
 
-## Sound Effects
+## Sound Effects (3/3)
+
+Let's also add sound effects to shooting, using `:fire_counter_missile`'s return value and a sound effect for when the space bar is pressed.
 
 ```patch
  function love.mousepressed(x,y,button)
@@ -777,25 +960,57 @@ http://love2d.org/wiki/love.mouse.getPosition
  
  end
 ```
-
----
-
-## Sound Effects
-
 ```patch
  function love.keypressed(key)
  
    if key == "space" then
 +    g_sounds.game_status:stop()
 +    g_sounds.game_status:play()
-     if g_mc:is_new_game() then
-       g_mc:start_new_game()
-     end
-     if g_mc:is_gameover() then
-       new_game()
-     end
+     [...] snip [...]
    end
 ```
+
+---
+
+## Targets - Continued
+
+Let's show when bases are out of ammo and how much ammo they have left.
+
+```patch
+ function draw_targets(targets)
+ 
+   for _,target in pairs(targets) do
+     if target.alive then
+ 
+       if target.type == "base" then
+         local mousex,mousey = love.mouse.getPosition()
+         local angle = g_mc:find_angle_to_position(target,mousex,mousey)
++        if target.ammo < 1 then
++          love.graphics.setColor(127,127,127)
++        end
+         love.graphics.draw(g_images.base,target.x,target.y,angle,1,1,32,32)
++        love.graphics.printf(string.rep("I",target.ammo),
++          target.x-32,target.y+32,64,"center")
++        love.graphics.setColor(255,255,255)
+       else --if target.type == "city" then
+         love.graphics.draw(g_images.city,target.x,target.y,0,1,1,32,32)
+       end
+ 
+     end
+   end
+ 
+ end
+```
+
+---
+
+class: center, middle
+
+# You did it!
+
+## Thanks for using LÖVE
+
+
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">
     </script>
