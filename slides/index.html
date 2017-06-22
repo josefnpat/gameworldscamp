@@ -151,6 +151,25 @@ And if we have time:
 
 ---
 
+## diff utility
+
+All changes that you are to make to your code will be in something akin to diff format.
+
+* Lines that start with a space (nothing) should be left alone.
+* Lines that start with a `+` should be added.
+* Lines that start with a `-` should be removed.
+* Lines that contain `[...] snip [...]` mean that extra code has been removed to help fit on a slide.
+
+```patch
+ Hello there!
++I want you to add this line!
+-but you should remove this line.
+ [...] snip [...]
+ Not game over, but "The End".
+```
+
+---
+
 ## Lua - Comments
 
 Sometimes it's nice to leave notes for other developers.
